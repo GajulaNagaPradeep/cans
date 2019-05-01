@@ -14,7 +14,7 @@ class ConductedByNameField extends PureComponent {
     const isValid = !value || value.length <= ConductedByNameMaxLength
     const showError = !disabled && !isValid
     return (
-      <div className={'domain-comment-block'}>
+      <div className={'conducted-by-field-block'}>
         <Label for={id} className={'conducted-by-input-label'}>
           {label}
         </Label>

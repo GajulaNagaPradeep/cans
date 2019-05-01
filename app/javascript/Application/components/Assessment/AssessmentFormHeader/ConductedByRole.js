@@ -16,7 +16,7 @@ class ConductedByRole extends PureComponent {
     const id = 'conducted-by-role'
     const labelId = `${id}-label`
     return (
-      <div>
+      <div className={'conducted-by-field-block'}>
         <Label id={labelId} for={id} className={'conducted-by-input-label'}>
           Select Role *
         </Label>
