@@ -352,7 +352,7 @@ feature 'Case Worker Functionality' do
     end
     @form.item_bottom_chevron[0].click
     expect(@form).to have_no_inner_item_rating
-    @form.domain_collapse_button.click
+    @form.collapse_domain_from_button
     expect(@form).to have_no_domain_collapse_button
     expand_first_domain
     expand_first_item

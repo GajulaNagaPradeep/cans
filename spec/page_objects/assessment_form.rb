@@ -202,6 +202,11 @@ class AssessmentForm < SitePrism::Page
   def complete_assessment(has_previous_values)
     footer.complete_assessment has_previous_values
   end
+
+  def collapse_domain_from_button
+    domain_collapse_button.click
+    sleep 0.4 # Material UI transition duration
+  end
 end
 
 def fill_conducted_by_first_name_field(text)
