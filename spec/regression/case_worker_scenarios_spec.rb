@@ -347,13 +347,12 @@ feature 'Case Worker Functionality' do
       expect(@form.inner_item_radios[index].checked?).to be(true)
       expect(@form.domain_reg_radios[index].checked?).to be(true)
     end
-    # Collapsing starts here
-    # @form.item_bottom_chevron[0].click
-    # expect(@form).to have_no_inner_item_rating
-    # @form.domain_collapse_button.click
-    # expect(@form).to have_no_domain_collapse_button
-    # expand_first_domain
-    # expand_first_item
+    @form.item_bottom_chevron[0].click
+    expect(@form).to have_no_inner_item_rating
+    @form.collapse_domain_from_button
+    expect(@form).to have_no_domain_collapse_button
+    expand_first_domain
+    expand_first_item
   end
 
   def discretion_and_not_applicable_checkbox_test
