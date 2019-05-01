@@ -211,8 +211,7 @@ def fill_conducted_by_first_name_field(text)
     },
     proc {
       expect(@form.header.conducted_by_first_name.value).to eq(text)
-    },
-    5
+    }
   )
 end
 
@@ -223,8 +222,7 @@ def fill_conducted_by_last_name_field(text)
     },
     proc {
       expect(@form.header.conducted_by_last_name.value).to eq(text)
-    },
-    5
+    }
   )
 end
 

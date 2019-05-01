@@ -21,11 +21,6 @@ feature 'Case Worker Functionality' do
     @assessment_helper = AssessmentHelper.new
   end
 
-  before(:each) do
-    @domain_total_count = []
-    @total_radio_selected = []
-  end
-
   after(:all) do
     logout
   end
@@ -40,9 +35,9 @@ feature 'Case Worker Functionality' do
     fill_conducted_by_first_name_field('Mike')
     validate_save_button
     input_date_and_calendar_icon_test(current_date)
-    fill_conducted_by_first_name_field('Mike')
+    # fill_conducted_by_first_name_field('Mike')
     check_case_or_referral_number
-    click_0_to_5_button
+    # click_0_to_5_button
     domain_and_item_rating_test
     discretion_and_not_applicable_checkbox_test
     item_and_domain_level_comment_test
@@ -61,7 +56,8 @@ feature 'Case Worker Functionality' do
     click_save_and_summary_card_is_shown
     reload_page
     expect(@form).to have_summary
-    warning_and_summary_card_shown_after_complete_button_clicked(has_previous_values)
+    # warning_and_summary_card_shown_after_complete_button_clicked(has_previous_values)
+    click_complete_button_then_summary_card_shown(has_previous_values)
     verify_the_tool_tip_of_summary_card
     verify_the_content_of_summary_card('0to5')
   end
@@ -79,8 +75,8 @@ feature 'Case Worker Functionality' do
     click_complete_button_then_summary_card_shown has_previous_values
     verify_the_tool_tip_of_summary_card
     verify_the_content_of_summary_card('6to21')
-    go_back
-    validate_unsaved_warning_closed
+    # go_back
+    # validate_unsaved_warning_closed
   end
 
   scenario 'Fill out Reassessment with preceding assessment data, from 6 to 21' do
@@ -98,8 +94,8 @@ feature 'Case Worker Functionality' do
     end
     fill_conducted_by
     @form.review_all_domains_6_to_21
-    expand_first_item
-    item_and_domain_level_comment_test
+    # expand_first_item
+    # item_and_domain_level_comment_test
     warning_and_summary_card_shown_after_complete_button_clicked has_previous_values
   end
 
@@ -297,6 +293,7 @@ feature 'Case Worker Functionality' do
   end
 
   def validate_domain_radio_and_chevron
+    @total_radio_selected = []
     scroll_to_top
     expand_first_domain
     expand_first_item
@@ -350,12 +347,13 @@ feature 'Case Worker Functionality' do
       expect(@form.inner_item_radios[index].checked?).to be(true)
       expect(@form.domain_reg_radios[index].checked?).to be(true)
     end
-    @form.item_bottom_chevron[0].click
-    expect(@form).to have_no_inner_item_rating
-    @form.domain_collapse_button.click
-    expect(@form).to have_no_domain_collapse_button
-    expand_first_domain
-    expand_first_item
+    # Collapsing starts here
+    # @form.item_bottom_chevron[0].click
+    # expect(@form).to have_no_inner_item_rating
+    # @form.domain_collapse_button.click
+    # expect(@form).to have_no_domain_collapse_button
+    # expand_first_domain
+    # expand_first_item
   end
 
   def discretion_and_not_applicable_checkbox_test
@@ -391,7 +389,7 @@ feature 'Case Worker Functionality' do
       expect(find('svg')[:class].include?('comment-icon-solid')).to be(true)
     end
     domain_comment_content = 'some domain level comments'
-    @form.inner_items[-1].click
+    # @form.inner_items[-1].click
     @form.domain_level_comments[0].set domain_comment_content
     expect(@form.domain_level_comments[0].value).to eq(domain_comment_content)
     expect(page.has_content?("#{domain_comment_content.length}/2500")).to be(true)
@@ -402,6 +400,10 @@ feature 'Case Worker Functionality' do
     within @form.domain_toolbar_comment_icon_block[0] do
       expect(find('svg')[:class].include?('comment-icon-solid')).to be(true)
     end
+    @form.item_bottom_chevron[0].click
+    expect(@form).to have_no_inner_item_rating
+    @form.domain_collapse_button.click
+    expect(@form).to have_no_domain_collapse_button
   end
 
   def fill_form_header_0_to_5(should_start_prefilled)
@@ -466,6 +468,7 @@ feature 'Case Worker Functionality' do
   end
 
   def fill_out_assessment_form_and_check_domain_total
+    @domain_total_count = []
     fill_out_assessment_form_with_rating_1
     all_items_amount = @form.process_counts.map(&:text)
     all_items_amount.each { |element| @domain_total_count.push(element.split('/')[1]) }
