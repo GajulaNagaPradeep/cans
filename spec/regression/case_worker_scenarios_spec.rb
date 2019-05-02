@@ -35,9 +35,7 @@ feature 'Case Worker Functionality' do
     fill_conducted_by_first_name_field('Mike')
     validate_save_button
     input_date_and_calendar_icon_test(current_date)
-    # fill_conducted_by_first_name_field('Mike')
     check_case_or_referral_number
-    # click_0_to_5_button
     domain_and_item_rating_test
     discretion_and_not_applicable_checkbox_test
     item_and_domain_level_comment_test
@@ -50,13 +48,12 @@ feature 'Case Worker Functionality' do
     fill_form_header_0_to_5 has_previous_values
     expand_all_domains
     check_redacted_checkbox_0_to_5
-    verify_caregiver_name_input_field_and_label
+    add_caregiver_name
     fill_out_assessment_form_and_check_domain_total
     check_all_progress_are_fully_filled
     click_save_and_summary_card_is_shown
     reload_page
     expect(@form).to have_summary
-    # warning_and_summary_card_shown_after_complete_button_clicked(has_previous_values)
     click_complete_button_then_summary_card_shown(has_previous_values)
     verify_the_tool_tip_of_summary_card
     verify_the_content_of_summary_card('0to5')
@@ -68,15 +65,12 @@ feature 'Case Worker Functionality' do
     fill_form_header_6_to_21 has_previous_values
     expand_all_domains
     check_redacted_checkbox_6_to_21
-    verify_caregiver_name_input_field_and_label
+    add_caregiver_name
     fill_out_assessment_form_and_check_domain_total
     check_all_progress_are_fully_filled
-    click_save_and_summary_card_is_shown
     click_complete_button_then_summary_card_shown has_previous_values
     verify_the_tool_tip_of_summary_card
     verify_the_content_of_summary_card('6to21')
-    # go_back
-    # validate_unsaved_warning_closed
   end
 
   scenario 'Fill out Reassessment with preceding assessment data, from 6 to 21' do
@@ -94,8 +88,6 @@ feature 'Case Worker Functionality' do
     end
     fill_conducted_by
     @form.review_all_domains_6_to_21
-    # expand_first_item
-    # item_and_domain_level_comment_test
     warning_and_summary_card_shown_after_complete_button_clicked has_previous_values
   end
 
@@ -130,12 +122,10 @@ feature 'Case Worker Functionality' do
     navigate_to_client_profile(CLIENT_NAME_2)
     validate_new_assessment(current_date, CLIENT_NAME_2)
     navigate_to_client_profile(CLIENT_NAME_2)
-    view_cans_change_log_test(current_date, CLIENT_NAME_2)
-    navigate_to_client_profile(CLIENT_NAME_2)
     delete_assessment_test(current_date, CLIENT_NAME_2)
   end
 
-  scenario 'Case worker login, tests caregiver domain with new assessment and logs out' do
+  scenario 'Case worker tests caregiver domain with new assessment' do
     visit '/'
     @assessment_helper.start_assessment_for CLIENT_NAME
     click_0_to_5_button
@@ -212,12 +202,9 @@ feature 'Case Worker Functionality' do
     sleep 2
   end
 
-  def verify_caregiver_name_input_field_and_label
-    expect(@form.caregiver_domain_headers[0].text).to include('Caregiver Name is required')
+  def add_caregiver_name
     @form.caregiver_name_fields[0].set 'Awesome Caregiver'
     expect(@form.caregiver_name_fields[0].value).to eq('Awesome Caregiver')
-    expect(@form.caregiver_domain_headers[0].text).to include('Awesome Caregiver')
-    expect(@form.caregiver_domain_headers[0].text).to_not include('Caregiver Name is required')
   end
 
   def expand_first_domain
@@ -347,12 +334,6 @@ feature 'Case Worker Functionality' do
       expect(@form.inner_item_radios[index].checked?).to be(true)
       expect(@form.domain_reg_radios[index].checked?).to be(true)
     end
-    @form.item_bottom_chevron[0].click
-    expect(@form).to have_no_inner_item_rating
-    @form.collapse_domain_from_button
-    expect(@form).to have_no_domain_collapse_button
-    expand_first_domain
-    expand_first_item
   end
 
   def discretion_and_not_applicable_checkbox_test
@@ -388,7 +369,6 @@ feature 'Case Worker Functionality' do
       expect(find('svg')[:class].include?('comment-icon-solid')).to be(true)
     end
     domain_comment_content = 'some domain level comments'
-    # @form.inner_items[-1].click
     @form.domain_level_comments[0].set domain_comment_content
     expect(@form.domain_level_comments[0].value).to eq(domain_comment_content)
     expect(page.has_content?("#{domain_comment_content.length}/2500")).to be(true)
@@ -401,7 +381,7 @@ feature 'Case Worker Functionality' do
     end
     @form.item_bottom_chevron[0].click
     expect(@form).to have_no_inner_item_rating
-    @form.domain_collapse_button.click
+    @form.collapse_domain_from_button
     expect(@form).to have_no_domain_collapse_button
   end
 
@@ -569,8 +549,7 @@ feature 'Case Worker Functionality' do
     @form.add_caregiver_button.click
     expect(@form.caregiver_name_fields.length).to eq(2)
     @form.caregiver_name_fields[0].set 'Caregiver One'
-    @form.caregiver_name_fields[0].set 'Awesome Caregiver'
-    expect(@form.caregiver_name_fields[0].value).to eq('Awesome Caregiver')
+    add_caregiver_name
     expect(@form.caregiver_domain_headers[0].text).to include('Awesome Caregiver')
     @form.caregiver_domains_first_item_labels[1].click
     expect(@form.caregiver_domains_first_item_radios[1].checked?).to be(true)
