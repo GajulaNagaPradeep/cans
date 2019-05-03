@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { container, header, fourColsRow, contentBox, fourColsBox, descriptionBox } from '../PrintStyles'
+import { container, header, fourColsRow, contentBox, fourColsBox, descriptionBox } from './PrintClientStyle'
 import PropTypes from 'prop-types'
 import { isoToLocalDate } from '../../../util/dateHelper'
 

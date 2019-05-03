@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react'
-import { header, container } from '../PrintStyles'
+import { header, container, historyTable } from './PrintClientStyle'
 import PropTypes from 'prop-types'
 import { isoToLocalDate } from '../../../util/dateHelper'
 import { composeUpdatedByName } from './PrintClientHelper'
-import { historyTable } from './PrintClientStyle'
 
 class PrintClientHistory extends PureComponent {
   renderHistoryTable = assessments => {

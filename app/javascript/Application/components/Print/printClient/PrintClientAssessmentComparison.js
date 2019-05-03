@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { header, container } from '../PrintStyles'
+import { header, container } from './PrintClientStyle'
 import { comparisonDataType } from './PrintClientHelper'
 import { ageRange } from '../../Client/AssessmentComparison/AssessmentComparisonHelper'
 import PrintComparisonGraph from './PrintComparisonGraph'

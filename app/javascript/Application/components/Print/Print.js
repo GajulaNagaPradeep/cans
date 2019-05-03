@@ -15,9 +15,11 @@ class Print extends React.Component {
       <iframe
         id={printFrameId}
         title={printFrameId}
-        style={{ height: '100%', width: '100%' }}
-        height="100%"
-        width="100%"
+        style={{
+          height: 0,
+          width: 0,
+          position: 'absolute',
+        }}
       />
     )
   }

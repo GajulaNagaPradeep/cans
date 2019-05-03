@@ -14,11 +14,11 @@ describe('<Print />', () => {
     expect(printComponent.find('iframe').length).toBe(1)
   })
 
-  it('renders print iframe with full-screen size', () => {
+  it('renders print iframe with zero in area and absolute position', () => {
     const printComponent = mountPrintComponent(jest.fn())
-    expect(printComponent.find('iframe').props().height).toBe('100%')
-    expect(printComponent.find('iframe').props().width).toBe('100%')
-    expect(printComponent.find('iframe').props().style).toEqual({ height: '100%', width: '100%' })
+    expect(printComponent.find('iframe').props().style.height).toBe(0)
+    expect(printComponent.find('iframe').props().style.width).toBe(0)
+    expect(printComponent.find('iframe').props().style.position).toBe('absolute')
   })
 
   it('should print and invoke onClose callback', () => {
