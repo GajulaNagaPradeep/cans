@@ -21,10 +21,13 @@ class Comment extends Component {
   }
 
   handleInternalValueUpdate = event => {
+    const { maxCommentLength } = this.props
     const value = event.target.value
+    const safariMaxLengthCompensation = calculateSafariMaxLengthAddition(value)
+    const compensatedMaxLength = maxCommentLength + safariMaxLengthCompensation
     this.setState({
-      value,
-      safariMaxLengthCompensation: calculateSafariMaxLengthAddition(value),
+      value: value.length > compensatedMaxLength ? value.substring(0, compensatedMaxLength) : value,
+      safariMaxLengthCompensation,
     })
   }
 

@@ -56,6 +56,18 @@ describe('<Comment />', () => {
       const input = wrapper.find('textarea')
       expect(input.props().maxLength).toEqual(2500)
     })
+
+    it('truncate value to max length', () => {
+      const wrapper = wrapperWithInputLength('', 5)
+      const input = wrapper.find('textarea')
+      const event = { target: { value: '1234' } }
+      input.simulate('change', event)
+      expect(wrapper.state().value.length).toBe(4)
+      event.target.value = '1234567890'
+      input.simulate('change', event)
+      expect(wrapper.state().value.length).toBe(5)
+      expect(wrapper.state().value).toEqual('12345')
+    })
   })
 
   describe('styling', () => {
