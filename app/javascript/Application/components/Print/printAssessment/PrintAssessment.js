@@ -118,6 +118,7 @@ class PrintAssessment extends PureComponent {
               header={this.printHeaderGenerator(printAssessmentHeaderProps, assessment)}
               footer={<PrintAssessmentOverallFooter text={this.handleTimeStamp()} isFirefox={isFirefox} />}
               domains={domains}
+              redactLevel={this.props.redactLevel}
               i18n={this.props.i18n}
               isUnderSix={this.state.isAssessmentUnderSix}
             />

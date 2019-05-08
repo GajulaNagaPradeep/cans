@@ -16,6 +16,7 @@ import {
 } from '../../Assessment/AssessmentSummary/DomainHelper'
 import { getI18nByCode } from '../../common/I18nHelper'
 import { PrintSummaryRecord } from './PrintSummaryRecord'
+import { shouldBeRedacted, redactLevels } from './PrintAssessmentHelper'
 
 const STRENGTHS = 'Strengths'
 const ACTION_REQUIRED = 'Action Required'
@@ -25,21 +26,22 @@ const RATING_0 = 0
 const RATING_1 = 1
 const RATING_2 = 2
 const RATING_3 = 3
-const strengthItemsFilter = item => (item.rating === RATING_0 || item.rating === RATING_1) && !item.confidential
+const strengthItemsFilter = item => item.rating === RATING_0 || item.rating === RATING_1
 const actionRequiredItemsFilter = (item, domain) =>
-  (item.rating === RATING_2 || (isBehavioralNeedsDomain(domain) && item.rating === RATING_1)) && !item.confidential
-const immediateActionRequiredItemsFilter = item => item.rating === RATING_3 && !item.confidential
-const traumaItemsFilter = item => item.rating === RATING_1 && !item.confidential
+  item.rating === RATING_2 || (isBehavioralNeedsDomain(domain) && item.rating === RATING_1)
+const immediateActionRequiredItemsFilter = item => item.rating === RATING_3
+const traumaItemsFilter = item => item.rating === RATING_1
 
 class PrintSummary extends PureComponent {
   getCodes(domains, domainFilter, itemFilter) {
     const items = itemsValue(domains, domainFilter, itemFilter)
 
     const codes = items.map(item => {
+      const redactLevel = this.props.redactLevel
+      const redacted = shouldBeRedacted(item, redactLevel)
       const code = getI18nByCode(this.props.i18n, item.code)
-      return (code && code._title_) || ''
+      return redacted ? '' : code && code._title_
     })
-
     return codes
   }
 
@@ -94,11 +96,18 @@ PrintSummary.propTypes = {
   header: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   i18n: PropTypes.object.isRequired,
   isUnderSix: PropTypes.bool.isRequired,
+  redactLevel: PropTypes.oneOf([
+    redactLevels.all,
+    redactLevels.discrationNeeded,
+    redactLevels.confidential,
+    redactLevels.doNotRedact,
+  ]),
 }
 
 PrintSummary.defaultProps = {
   header: '',
   footer: '',
+  redactLevel: redactLevels.all,
 }
 
 export default PrintSummary

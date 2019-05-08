@@ -18,4 +18,10 @@ describe('<PrintSummaryRecord />', () => {
     expect(target.at(0).text()).toContain('Family Strengths')
     expect(target.at(1).text()).toContain('Interpersonal')
   })
+
+  it('does not render assessment summary record when items value is null', () => {
+    const wrapper = render({ title: 'Strengths', items: [null] })
+    const target = wrapper.find('#val')
+    expect(target.at(0).props().children).toEqual([null])
+  })
 })

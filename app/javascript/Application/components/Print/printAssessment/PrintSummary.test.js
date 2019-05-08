@@ -1,7 +1,16 @@
 import React from 'react'
 import { mount } from 'enzyme'
+import { assessmentWithNoConfidentialItem, i18nPrint } from '../../Assessment/assessment.mocks.test'
+import { getI18nByCode } from '../../common/I18nHelper'
 import PrintSummary from './PrintSummary'
 import PrintSummaryRecord from './PrintSummaryRecord'
+
+const fakePropsWithNoConfidentialItem = {
+  domain: { ...assessmentWithNoConfidentialItem.state.domains[0] },
+  domainI18n: getI18nByCode(i18nPrint, 'BEN'),
+  i18n: i18nPrint,
+  isAssessmentUnderSix: false,
+}
 
 describe('<PrintSummary />', () => {
   const i18n = {
@@ -79,6 +88,15 @@ describe('<PrintSummary />', () => {
     mount(
       <PrintSummary domains={domains} i18n={i18n} isUnderSix={isUnderSix} header="some header" footer="some footer" />
     )
+
+  it('will render a PrintSummaryRecord with correct props', () => {
+    const wrapper = render(fakePropsWithNoConfidentialItem)
+    const target = wrapper.find(PrintSummaryRecord)
+    expect(target.length).toBe(4)
+    expect(Object.keys(target.at(0).props())).toContain('items', 'title')
+    wrapper.unmount()
+  })
+
   it('will render a table', () => {
     const wrapper = render({ domainsWithWrongItemCode })
     expect(wrapper.find('table').length).toBe(1)

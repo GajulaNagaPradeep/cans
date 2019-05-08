@@ -8,13 +8,15 @@ export const PrintSummaryRecord = ({ title, items }) => {
       <div id="summary-header" style={summaryTitle}>
         {title}
       </div>
-      <ul style={summaryContent}>
+      <ul style={summaryContent} id="val">
         {items &&
-          items.map(val => (
-            <li style={summaryItem} id="item" key={val}>
-              {val}
-            </li>
-          ))}
+          items.map(val => {
+            return val ? (
+              <li style={summaryItem} id="item" key={val}>
+                {val}
+              </li>
+            ) : null
+          })}
       </ul>
     </td>
   )
