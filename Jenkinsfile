@@ -352,13 +352,15 @@ def releasePipeline() {
 def releaseToEnvironment(environment) {
   node(environment) {
     checkoutStage()
-    deployToStage(environment, env.APP_VERSION)
-    updateManifestStage(environment, env.APP_VERSION)
-    smokeTestStage(environment)
-    switch(environment) {
-      case "preint": acceptanceTestPreintStage('Regression Test Preint'); break;
-      case "integration": regressionTestStage('--env CANS_WEB_BASE_URL=https://web.integration.cwds.io/cans'); break;
-      default: echo "No tests for run for $environment"
+    rollbackDeployOnFailure('cans', environment, GITHUB_CREDENTIALS_ID, ansibleCommand(environment, env.APP_VERSION)) {
+        deployToStage(environment, env.APP_VERSION)
+        updateManifestStage(environment, env.APP_VERSION)
+        smokeTestStage(environment)
+        switch(environment) {
+          case "preint": acceptanceTestPreintStage('Regression Test Preint'); break;
+          case "integration": regressionTestStage('--env CANS_WEB_BASE_URL=https://web.integration.cwds.io/cans'); break;
+          default: echo "No tests for run for $environment"
+        }
     }
   }
 }
@@ -367,9 +369,13 @@ def deployToStage(environment, version) {
   stage("Deploy to $environment") {
     ws {
       git branch: "master", credentialsId: GITHUB_CREDENTIALS_ID, url: DE_ANSIBLE_GITHUB_URL
-      sh "ansible-playbook -e NEW_RELIC_AGENT=true -e APP_VERSION=$version -i inventories/$environment/hosts.yml deploy-cans.yml --vault-password-file ~/.ssh/vault.txt "
+      sh ansibleCommand(environment, version)
     }
   }
+}
+
+def ansibleCommand(environment, version){
+  "ansible-playbook -e NEW_RELIC_AGENT=true -e APP_VERSION=$version -i inventories/$environment/hosts.yml deploy-cans.yml --vault-password-file ~/.ssh/vault.txt "
 }
 
 def updateManifestStage(environment, version) {
