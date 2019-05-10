@@ -21,4 +21,16 @@ class AssessmentComparison < SitePrism::Page
   def click_age_switch_6to21
     age_switch_6to21.click
   end
+
+  def has_age_0_5_button
+    has_css? 'button#age-0-5-button'
+  end
+
+  def has_age_6_21_button
+    has_css? 'button#age-6-21-button'
+  end
+
+  def completed_count
+    all('.outer-header-text').size
+  end
 end

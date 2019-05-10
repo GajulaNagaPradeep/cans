@@ -25,6 +25,7 @@ feature 'Case Worker Functionality' do
     @assessment_changelog = AssessmentChangeLog.new
     @assessment_helper = AssessmentHelper.new
     @comparison = AssessmentComparison.new
+    prepare_initial_data
   end
 
   before(:each) do
@@ -217,6 +218,65 @@ feature 'Case Worker Functionality' do
     validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_6to21)
     validate_first_graph_bar_group_has_correct_rating
     switch_back_to_history
+  end
+
+  def prepare_initial_data
+    numbers = numbers_of_completed
+    number_of_0_to_5_needed = MIN_INITIAL_ASSESSMENTS - numbers[AGE_0_5]
+    number_of_6_to_21_needed = MIN_INITIAL_ASSESSMENTS - numbers[AGE_6_21]
+    # Create assessments for age 0-5
+    create_assessments number_of_0_to_5_needed, true if number_of_0_to_5_needed > 0
+    # Create assessments age 6-21
+    create_assessments number_of_6_to_21_needed, false if number_of_6_to_21_needed > 0
+  end
+
+  def numbers_of_completed
+    visit '/'
+    @staff_dash.visit_client_profile(CLIENT_NAME)
+    numbers = Hash.new 0
+    if @client_profile.has_switch_to_comparison
+      @client_profile.click_switch_to_comparison
+      if @comparison.has_age_0_5_button
+        @comparison.click_age_switch_0to5
+        numbers[AGE_0_5] = @comparison.completed_count
+      end
+      if @comparison.has_age_6_21_button
+        @comparison.click_age_switch_6to21
+        numbers[AGE_6_21] = @comparison.completed_count
+      end
+    end
+    numbers
+  end
+
+  def create_assessments(num, is_under_six = false)
+    i = 0
+    while i < num
+      event_date = Date.today - num - 1 + i
+      create_assessment(is_under_six, event_date)
+      i += 1
+    end
+  end
+
+  def create_assessment(is_under_six, event_date)
+    visit '/'
+    if is_under_six
+      @assessment_helper.start_assessment_for CLIENT_NAME
+      fill_conducted_by
+      click_0_to_5_button
+    else
+      fill_form_header_6_to_21 false
+      click_6_to_21_button
+    end
+
+    @form.header.date_field.click
+    @form.header.date_field.native.clear # avoid stuck
+    @form.header.date_field.native.clear
+    @form.header.date_field.set event_date.strftime('%m/%d/%Y')
+    expand_all_domains
+    fill_out_assessment_form_with_rating_1
+    verify_caregiver_name_input_field_and_label
+    save_and_check_the_success_message
+    click_complete_button_then_summary_card_shown false
   end
 
   def validate_child_dob_and_age(dob)

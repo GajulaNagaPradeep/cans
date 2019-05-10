@@ -9,6 +9,9 @@ require 'site_prism'
 require 'acceptance_helpers/login_helper'
 require 'acceptance_helpers/prod_login_helper'
 
+AGE_0_5 = '0-5'
+AGE_6_21 = '6-21'
+MIN_INITIAL_ASSESSMENTS = 5
 CLIENT_NAME = 'Case, Child 01 Test, Suff'
 CLIENT_LAST_NAME = CLIENT_NAME.split(',').first
 CLIENT_NAME_2 = 'Case, Child 02 Test, Suff'
