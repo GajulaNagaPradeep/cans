@@ -7,10 +7,15 @@ require 'page_objects/assessment_form'
 require 'page_objects/client_profile'
 require 'page_objects/staff_dashboard'
 require 'page_objects/assessment_changelog'
+require 'page_objects/assessment_comparison'
 
 feature 'Case Worker Functionality' do
   current_date = Time.now.getlocal.strftime('%m/%d/%Y')
   assessment_link = 'CANS Assessment Form'
+  expected_graph_horizontal_axis_values_0to5 = ['Challenges', 'Functioning', 'Risk Behaviors',
+                                                'Cultural Factors', 'Strengths', 'Dyadic Consid']
+  expected_graph_horizontal_axis_values_6to21 = ['Beh/Emotional', 'Life Functioning',
+                                                 'Risk Behaviors', 'Cultural Factors', 'Strengths']
 
   before(:all) do
     login
@@ -19,6 +24,7 @@ feature 'Case Worker Functionality' do
     @client_profile = ClientProfile.new
     @assessment_changelog = AssessmentChangeLog.new
     @assessment_helper = AssessmentHelper.new
+    @comparison = AssessmentComparison.new
   end
 
   before(:each) do
@@ -198,6 +204,19 @@ feature 'Case Worker Functionality' do
     @client_profile.go_to_recently_updated_assessment(current_date)
     go_back
     expect(@client_profile).to have_recently_updated_assessments_links
+  end
+
+  scenario 'Case worker uses comparison graph' do
+    visit '/'
+    @assessment_helper.visit_assessment_comparison CLIENT_NAME
+    expect(@comparison).to have_comparison_graph
+    validate_dates_in_legend_with_correct_order
+    @comparison.click_age_switch_0to5
+    validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_0to5)
+    @comparison.click_age_switch_6to21
+    validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_6to21)
+    validate_first_graph_bar_group_has_correct_rating
+    switch_back_to_history
   end
 
   def validate_child_dob_and_age(dob)
@@ -642,5 +661,57 @@ feature 'Case Worker Functionality' do
 
   def reload_page
     page.evaluate_script('window.location.reload()')
+  end
+
+  def legend_text_to_date_info(text)
+    date = Time.strptime(text.slice(0..9), '%m/%d/%Y')
+    if text.length == 10
+      [date, 0]
+    else
+      [date, text.slice(10..-1).delete('()').to_i]
+    end
+  end
+
+  def validate_dates_in_legend_with_correct_order
+    legend_text_array = @comparison.graph_legend.map { |el| legend_text_to_date_info(el.text) }
+    legend_text_array.each do |date_info|
+      current_index = legend_text_array.index(date_info)
+      if current_index < legend_text_array.length - 1
+        if date_info[0] != legend_text_array[current_index + 1][0]
+          expect(date_info[0]).to be < legend_text_array[current_index + 1][0]
+        else
+          expect(date_info[1]).to be < legend_text_array[current_index + 1][1]
+        end
+      end
+    end
+  end
+
+  def validate_horizontal_axis_ticks(expect_value)
+    horizontal_axis_ticks = []
+    within @comparison.graph_horizontal_axis do
+      @comparison.graph_horizontal_axis_ticks.each { |el| horizontal_axis_ticks.push(el.text) }
+    end
+    expect(horizontal_axis_ticks).to eq expect_value
+  end
+
+  def validate_first_graph_bar_group_has_correct_rating
+    first_table_row_value = []
+    first_bar_group_tool_tip_values = []
+    first_row = @comparison.comparison_outter_row.first
+    within first_row do
+      @comparison.comparison_outter_rating_box.each { |el| first_table_row_value.push(el.text) }
+    end
+    @comparison.graph_bars.first.click
+    @comparison.wait_until_graph_bar_tool_tip_visible
+    within @comparison.graph_bar_tool_tip do
+      @comparison.graph_bar_tool_tip_values
+                 .each { |el| first_bar_group_tool_tip_values.push(el.text) }
+    end
+    expect(first_bar_group_tool_tip_values).to eq first_table_row_value
+  end
+
+  def switch_back_to_history
+    @client_profile.assessment_history_button.click
+    expect(@client_profile).to have_assessment_history_title
   end
 end

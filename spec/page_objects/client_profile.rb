@@ -14,6 +14,8 @@ class ClientProfile < SitePrism::Page
   element :delete_cans_button, 'button.delete-action'
   element :cans_change_log_button, 'a.changelog-action'
   elements :recently_updated_assessments_links, '.assessment-info a'
+  element :assessment_comparison_button, 'svg[data-icon="chart-bar"]'
+  element :assessment_history_button, 'svg[data-icon="list"]'
 
   def go_to_recently_updated_assessment(assessment_date)
     assessment = recently_updated_assessments_links.find do |assessment_link|
