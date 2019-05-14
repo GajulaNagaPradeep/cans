@@ -65,6 +65,7 @@ class ComparisonOuterTable extends React.PureComponent {
         const domainTitle = getTitle(this.props.i18n, domain.code)
         return domainTitle
       },
+      className: 'domain-title',
     }
     const domainTotalCols = this.domainTotalColsGenerator(assessmentDates)
     blankColFiller(domainTotalCols, 'domain', requiredDomainColumnsAmount)

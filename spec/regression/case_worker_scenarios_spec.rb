@@ -220,6 +220,70 @@ feature 'Case Worker Functionality' do
     switch_back_to_history
   end
 
+  scenario 'Case worker uses comparison table' do
+    visit '/'
+    @assessment_helper.visit_assessment_comparison CLIENT_NAME
+    expect(@comparison).to have_comparison_table_header
+    expect(@comparison).to have_age_6_to_21_button_selected
+    count_columns_and_column_name
+    verify_the_content_of_comparison_table('6to21')
+    @comparison.age_switch_0to5.click
+    verify_the_content_of_comparison_table('0to5')
+    validate_chevron_and_trend_icon
+    validate_domain_total
+  end
+
+  def validate_domain_total
+    first_outer_table_row_value = []
+    within @comparison.comparison_outer_row.first do
+      @comparison.comparison_rating_box
+                 .each { |el| first_outer_table_row_value.push(el.text.to_i) }
+    end
+    @comparison.outer_table_expander.first.click
+    inner_table = @comparison.comparison_inner_table
+    inner_table_first_col = []
+    within inner_table do
+      @comparison.inner_table_rows.each do |row|
+        within row do
+          inner_table_first_col.push(@comparison.comparison_rating_box.first.text.to_i)
+        end
+      end
+    end
+    total_of_first_col = inner_table_first_col.reduce(0, :+)
+    expect(total_of_first_col).to eq first_outer_table_row_value[0]
+  end
+
+  def verify_the_content_of_comparison_table(age_range)
+    outer_table_row_title = []
+    @comparison.table_body.map { |el| outer_table_row_title.push(el.text) }
+    @domain_name_column_text =
+      if age_range == '0to5'
+        ['Challenges Domain', 'Functioning Domain', 'Risk Behaviors & Factors Domain',
+         'Cultural Factors - Family Domain', 'Strengths Domain',
+         'Dyadic Considerations Domain']
+      else
+        ['Behavioral / Emotional Needs Domain',
+         'Life Functioning Domain', 'Risk Behaviors Domain',
+         'Cultural Factors Domain', 'Strengths Domain']
+      end
+    expect(outer_table_row_title).to eq(@domain_name_column_text)
+  end
+
+  def count_columns_and_column_name
+    expect(@comparison.comparison_table_columns.length).to be(6)
+    expect(@comparison).to have_comparison_table_column
+  end
+
+  def validate_chevron_and_trend_icon
+    expect(@comparison.domain_chevron.length).to be(6)
+    @comparison.domain_chevron[0].click
+    expect(@comparison).to have_domain_item
+    expect(@comparison).to have_item_indicator
+    expect(@comparison).to have_item_indicator_icon
+    @comparison.domain_chevron[0].click
+    expect(@comparison).to_not have_domain_item
+  end
+
   def prepare_initial_data
     numbers = numbers_of_completed
     number_of_0_to_5_needed = MIN_INITIAL_ASSESSMENTS - numbers[AGE_0_5]
@@ -757,9 +821,9 @@ feature 'Case Worker Functionality' do
   def validate_first_graph_bar_group_has_correct_rating
     first_table_row_value = []
     first_bar_group_tool_tip_values = []
-    first_row = @comparison.comparison_outter_row.first
+    first_row = @comparison.comparison_outer_row.first
     within first_row do
-      @comparison.comparison_outter_rating_box.each { |el| first_table_row_value.push(el.text) }
+      @comparison.comparison_rating_box.each { |el| first_table_row_value.push(el.text) }
     end
     @comparison.graph_bars.first.click
     @comparison.wait_until_graph_bar_tool_tip_visible
