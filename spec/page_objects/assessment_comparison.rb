@@ -22,8 +22,6 @@ class AssessmentComparison < SitePrism::Page
   elements :domain_chevron, 'div.rt-td.rt-expandable'
   element :domain_chevron_expand, 'svg.fa-chevron-down'
   element :domain_item, 'div.rt-td.inner-item-name-content', text: 'Impulsivity/Hyperactivity'
-  element :item_indicator, 'span.item-trending-indicator', match: :first
-  element :item_indicator_icon, 'svg.fa-arrow-up', match: :first
   element :comparison_inner_table, 'div.inner-table'
   elements :inner_table_rows, 'div.rt-tr'
   elements :outer_table_expander, 'div.outer-expander'

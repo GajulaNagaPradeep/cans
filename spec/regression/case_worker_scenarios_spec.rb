@@ -229,7 +229,7 @@ feature 'Case Worker Functionality' do
     verify_the_content_of_comparison_table('6to21')
     @comparison.age_switch_0to5.click
     verify_the_content_of_comparison_table('0to5')
-    validate_chevron_and_trend_icon
+    validate_chevron
     validate_domain_total
   end
 
@@ -274,12 +274,10 @@ feature 'Case Worker Functionality' do
     expect(@comparison).to have_comparison_table_column
   end
 
-  def validate_chevron_and_trend_icon
+  def validate_chevron
     expect(@comparison.domain_chevron.length).to be(6)
     @comparison.domain_chevron[0].click
     expect(@comparison).to have_domain_item
-    expect(@comparison).to have_item_indicator
-    expect(@comparison).to have_item_indicator_icon
     @comparison.domain_chevron[0].click
     expect(@comparison).to_not have_domain_item
   end
