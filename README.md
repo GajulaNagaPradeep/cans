@@ -1,27 +1,20 @@
 # CANS
 
-This README documents the steps necessary to get the
-application up and running.
+CANS stands for Child and Adolescent Needs and Strengths. It is an application built to capture the needs and strengths of children and adolescents through assessments. This repository contains the front end application which is explained in detail in the [architecture](#architecture) section.
 
-Things you may want to cover:
+# Table of Contents
 
-* Ruby version
+1. [First Time Setup](#first-time-setup)
+2. [Running the App](#running-the-app)
+  1. [Running with Preint](#running-with-preint-environment)
+  2. [Running with local docker images](#running-everything-locally-with-docker-compose)
+  3. [Linting and Testing](#linting-and-tests)
+3. [Hotfix Approach](#hotfix-approach)
+4. [Architecture](#architecture)
+  1. [Rails](#rails)
+  2. [React](#react)
+5. [Questions](#questions)
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
 # First Time Setup
 
 Install Ruby 2.5.1 (Check the version specified in the .ruby-version file, in case this readme is stale).
@@ -105,6 +98,56 @@ yarn lint
 1. New hotfix branches should be created for new release versions
 2. Hotfix branches should be protected in GitHub similar to master
 3. Hotfix pipelines in CANS should be changed to use new hotfix branches as a baseline
+
+# Architecture
+
+The CANS application front end has two parts Rails and React. Each part has its own libraries and design decisions which are covered in the respective sections. Rails serves the React application, proxies api calls, and stores session information using Redis. React is the front end application code that runs in the browser and makes requests to Rails for API calls. Rails is meant to be a simple proxy for API calls not a complex middle-man between the CANS API and the React application.
+
+## Rails
+
+[Rails](https://github.com/rails/rails) is an MVC Framework for developing web applications. Its usage in CANS is minimal because it primarily serves as session storage and a proxy for API calls. However, Rails is developed in a community with strong ties to [Test Driven Development](http://agiledata.org/essays/tdd.html) and automated testing methods which proves to be very valuable for development.
+
+### Regression Suite
+We have a set of regression tests developed to make sure that our application does not break from a user perspective when we make changes. These tests are stored in our Rails app and run as part of our pipeline during deployments. Regression tests use capybara and rspec, two of the rails dependencies mentioned in the following section, and use Site Prism as part of a page object model approach for testing.
+
+### Primary Dependencies
+* [sass-rails](https://github.com/rails/sass-rails) for scss stylesheets
+* [rails webpacker](https://github.com/rails/webpacker) for compiling the React application
+* [capybara](https://github.com/teamcapybara/capybara) for integration/feature testing the application as a real user would use it
+* [rspec rails](https://github.com/rspec/rspec-rails) for running tests in a Test Driven Development fashion
+* [selenium-webdriver](https://www.seleniumhq.org/projects/webdriver/) a driver for Capybara to interact with the browser
+* [site prism](https://github.com/natritmeyer/site_prism) to define page objects for testing
+
+## React
+
+The React part of CANS is JavaScript written in [ES6](http://es6-features.org/#Constants) and [JSX](https://reactjs.org/docs/introducing-jsx.html) as a [React](https://reactjs.org/) application
+
+### Primary Dependencies
+* [React](https://reactjs.org/) a library for developing web applications
+* [component library](https://github.com/ca-cwds/design-system) a library for CWDS components used accross all CWDS services
+* [material UI](https://material-ui.com/) for custom components outside the component library (assessment form)
+* [react-strap](https://reactstrap.github.io/) for custom components built with bootstrap 4
+* [downshift](https://github.com/downshift-js/downshift) for React-based autocomplete components
+* [recharts](https://github.com/recharts/recharts) for React-based chart components
+* [axios](https://github.com/axios/axios) a web client for making API calls
+* [babel](https://babeljs.io/) for transpiling ES6 and JSX into JavaScript
+* [webpack](https://webpack.js.org/) for packaging all assets into packs
+* [eslint](https://eslint.org/) a utility for checking that code follows cleanliness standards
+* [jest](https://jestjs.io/) a test framework for unit tests
+
+### Loading Boundaries
+
+Loading boundaries are components meant to load a particular resource by API call, and display a spinner or other details until the result is successfully returned and displayed. They pass certain props to their children to communicate the status of the call and handle errors.
+
+### Redux
+
+The CANS development team made a conscious decision *not* to use [Redux](https://redux.js.org/) because there was little need for it. Redux is most useful for global state or shared state that would otherwise become too difficult to maintain. There proved not to be much need for a complex architecture with Redux because the application design was fairly simple, modular, and multi-paged. Loading Boundaries proved to be a good mechanism for wrapping API calls and sharing responses with child components, so there was no need to store API responses with Redux either.
+
+There are or were other CWDS projects that used Redux, so it is worth calling out that Redux is *not* used in CANS.
+
+## Deployments
+
+deployments are done using [Docker](https://www.docker.com/) images. Docker can bring up a fresh environment in a straightforward manner using images as a starting point. It also documents changes to images since those images are maintained through docker files in this repository. There exists docker files for testing, and deployment.
 
 # Questions
 
