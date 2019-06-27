@@ -3,7 +3,7 @@ import { Card } from '@cwds/components'
 import ComparisonOuterTable from './comparisonTable/ComparisonOuterTable'
 import ComparisonGraph from './comparisonGraph/ComparisonGraph'
 import './style.sass'
-import { shallow, mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import AssessmentComparison from './AssessmentComparison'
 import ComparisonAgeSwitchButtonGroup from './ComparisonAgeSwitchButtonGroup'
 import { ageRange } from './AssessmentComparisonHelper'
@@ -222,24 +222,8 @@ describe('<AssessmentComparison />', () => {
     expect(Object.keys(target)).toContain('currentDataKey', 'isAgeSwitchShown')
   })
 
-  it('will render one card', () => {
-    const target = wrapper.find(Card)
-    expect(target.length).toBe(1)
-  })
-
-  it('renders card with correct className', () => {
-    const target = wrapper.find(Card)
-    expect(target.props().className).toBe('comparison-graph-card')
-  })
-
   it('will render a ComparisonOuterTable with correct props', () => {
     const target = wrapper.find(ComparisonOuterTable)
-    expect(target.length).toBe(1)
-    expect(Object.keys(target.props())).toContain('data', 'i18n')
-  })
-
-  it('will render a ComparisonGraph with correct props', () => {
-    const target = wrapper.find(ComparisonGraph)
     expect(target.length).toBe(1)
     expect(Object.keys(target.props())).toContain('data', 'i18n')
   })
@@ -330,5 +314,43 @@ describe('<AssessmentComparison />', () => {
     wrapper.instance().handleAgeSwitch(false)
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy).toHaveBeenCalledWith({ currentDataKey: ageRange.ABOVESIX })
+  })
+
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=true env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'true'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('will render one card', () => {
+      const target = wrapper.find(Card)
+      expect(target.length).toBe(1)
+    })
+
+    it('renders card with correct className', () => {
+      const target = wrapper.find(Card)
+      expect(target.props().className).toBe('comparison-graph-card')
+    })
+
+    it('will render a ComparisonGraph with correct props', () => {
+      const target = wrapper.find(ComparisonGraph)
+      expect(target.length).toBe(1)
+      expect(Object.keys(target.props())).toContain('data', 'i18n')
+    })
+  })
+
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=false env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'false'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('will not render any cards', () => {
+      expect(wrapper.find(Card).exists()).toBeFalsy()
+    })
+
+    it('will not render ComparisonGraph', () => {
+      expect(wrapper.find(ComparisonGraph).exists()).toBeFalsy()
+    })
   })
 })

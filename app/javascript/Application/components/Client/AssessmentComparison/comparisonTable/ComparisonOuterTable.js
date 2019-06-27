@@ -13,6 +13,7 @@ import {
   domainRatingSwitcher,
 } from './comparisonTableHelper'
 import '../style.sass'
+import { isDomainTotalFeatureEnabled } from '../../../../util/env'
 
 class ComparisonOuterTable extends React.PureComponent {
   constructor(props) {
@@ -29,6 +30,7 @@ class ComparisonOuterTable extends React.PureComponent {
           <ComparisonOuterTableHeader date={dateInfo[index].event_date} status={dateInfo[index].assessment_status} />
         ),
         accessor: domain => {
+          if (!isDomainTotalFeatureEnabled()) return ''
           const ratingTotal = domain.domain_ratings[index].value
           const type = domain.items[0].item_ratings[0].type
           return domainRatingSwitcher(ratingTotal, type)

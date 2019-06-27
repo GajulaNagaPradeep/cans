@@ -29,6 +29,31 @@ describe('<PrintDomainHeader />', () => {
     wrapper = mount(<PrintDomainHeader {...fakeProps} />)
     const target = wrapper.find('text')
     expect(target.at(0).text()).toContain(fakeProps.text)
-    expect(target.at(1).text()).toContain(fakeProps.total)
+  })
+
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=true env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'true'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('will render domain total', () => {
+      wrapper = mount(<PrintDomainHeader {...fakeProps} />)
+      const target = wrapper.find('text')
+      expect(target.at(1).text()).toContain(fakeProps.total)
+    })
+  })
+
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=false env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'false'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('will not render domain total', () => {
+      wrapper = mount(<PrintDomainHeader {...fakeProps} />)
+      const target = wrapper.find('text')
+      expect(target.at(1).exists()).toBeFalsy()
+    })
   })
 })

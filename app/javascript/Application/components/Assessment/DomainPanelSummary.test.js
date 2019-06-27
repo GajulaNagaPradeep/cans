@@ -125,9 +125,30 @@ describe('DomainPanelSummary', () => {
     expect(alert.exists()).toBe(false)
   })
 
-  it('renders DomainScore', () => {
-    const wrapper = render()
-    expect(wrapper.find(DomainScore).length).toBe(1)
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=true env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'true'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('renders DomainScore', () => {
+      expect(render().find(DomainScore).length).toBe(1)
+    })
+  })
+
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=false env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'false'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('does not render DomainScore', () => {
+      expect(
+        render()
+          .find(DomainScore)
+          .exists()
+      ).toBeFalsy()
+    })
   })
 
   describe('progress bar', () => {

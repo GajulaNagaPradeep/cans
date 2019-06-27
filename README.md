@@ -152,3 +152,8 @@ deployments are done using [Docker](https://www.docker.com/) images. Docker can 
 # Questions
 
 If you have any questions regarding the contents of this repository, please email the Office of Systems Integration at FOSS@osi.ca.gov.
+
+# Feature Flags
+There is a feature flag mechanism in the app. The flags are stored in the **_.env_** file. The following flags are implemented:
+1. DOMAIN_TOTAL_FEATURE_ENABLED - turns on/off Domain Total feature. Possible values: true, false. Default value: **true**. 
+    

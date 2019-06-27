@@ -6,6 +6,7 @@ import './style.sass'
 import PropTypes from 'prop-types'
 import ComparisonAgeSwitchButtonGroup from './ComparisonAgeSwitchButtonGroup'
 import { ageRange, analyzeData } from './AssessmentComparisonHelper'
+import { isDomainTotalFeatureEnabled } from '../../../util/env'
 
 class AssessmentComparison extends React.Component {
   constructor(props) {
@@ -43,11 +44,13 @@ class AssessmentComparison extends React.Component {
           <ComparisonAgeSwitchButtonGroup isUnderSix={isCurrentAgeRangeUnderSix} ageSwitch={this.handleAgeSwitch} />
         ) : null}
         <ComparisonOuterTable data={currentData} i18n={i18n} />
-        <Card className={'comparison-graph-card'}>
-          <CardBody className={'comparison-graph-container'}>
-            <ComparisonGraph data={currentData} i18n={i18n} />
-          </CardBody>
-        </Card>
+        {isDomainTotalFeatureEnabled() && (
+          <Card className={'comparison-graph-card'}>
+            <CardBody className={'comparison-graph-container'}>
+              <ComparisonGraph data={currentData} i18n={i18n} />
+            </CardBody>
+          </Card>
+        )}
       </CardBody>
     )
   }

@@ -21,6 +21,10 @@ STAFF_NAME = 'Regression, QA02'
 CLIENT_LIST_TITLE = 'Client List'
 CAREGIVER_DOMAIN_WARNING_MESSAGE = 'You are about to remove the caregiver from this Assessment.'
 
+def domain_total_feature_enabled?
+  ENV.fetch('DOMAIN_TOTAL_FEATURE_ENABLED', 'true') == 'true'
+end
+
 def with_retry(func0, func1, times = 3)
   loop do
     begin

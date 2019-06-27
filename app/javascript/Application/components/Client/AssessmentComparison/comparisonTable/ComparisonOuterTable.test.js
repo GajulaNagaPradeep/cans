@@ -77,12 +77,34 @@ describe('<ComparisonOuterTable />', () => {
     getTitleSpy.mockReset()
   })
 
-  it('domainRatingSwitcher will be invoked by domainTotalCols accessor', () => {
-    const domainRatingSwitcherSpy = jest.spyOn(helper, 'domainRatingSwitcher')
-    const target = wrapper.find(DataGrid).props().columns[2].accessor
-    target(fakeProps.data.domains[0])
-    expect(domainRatingSwitcherSpy).toHaveBeenCalledTimes(1)
-    domainRatingSwitcherSpy.mockReset()
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=true env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'true'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('domainRatingSwitcher will be invoked by domainTotalCols accessor', () => {
+      const domainRatingSwitcherSpy = jest.spyOn(helper, 'domainRatingSwitcher')
+      const target = wrapper.find(DataGrid).props().columns[2].accessor
+      target(fakeProps.data.domains[0])
+      expect(domainRatingSwitcherSpy).toHaveBeenCalledTimes(1)
+      domainRatingSwitcherSpy.mockReset()
+    })
+  })
+
+  describe('with DOMAIN_TOTAL_FEATURE_ENABLED=false env var', () => {
+    const tmpValue = process.env.DOMAIN_TOTAL_FEATURE_ENABLED
+    beforeAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = 'false'))
+
+    afterAll(() => (process.env.DOMAIN_TOTAL_FEATURE_ENABLED = tmpValue))
+
+    it('domainRatingSwitcher will not be invoked by domainTotalCols accessor', () => {
+      const domainRatingSwitcherSpy = jest.spyOn(helper, 'domainRatingSwitcher')
+      const target = wrapper.find(DataGrid).props().columns[2].accessor
+      target(fakeProps.data.domains[0])
+      expect(domainRatingSwitcherSpy).not.toHaveBeenCalled()
+      domainRatingSwitcherSpy.mockReset()
+    })
   })
 
   it('will render null when got invalid data', () => {

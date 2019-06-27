@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { isDomainTotalFeatureEnabled } from '../../../util/env'
 
 const PrintDomainHeader = props => {
   return (
@@ -8,9 +9,11 @@ const PrintDomainHeader = props => {
       <text fontSize="16px" fill="black" x="1%" y="50%" dominantBaseline="middle" textAnchor="start">
         {props.text}
       </text>
-      <text fontSize="16px" fill="black" x="99%" y="50%" dominantBaseline="middle" textAnchor="end">
-        Total:{props.total}
-      </text>
+      {isDomainTotalFeatureEnabled() && (
+        <text fontSize="16px" fill="black" x="99%" y="50%" dominantBaseline="middle" textAnchor="end">
+          Total:{props.total}
+        </text>
+      )}
     </svg>
   )
 }

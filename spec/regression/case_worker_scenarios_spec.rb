@@ -207,17 +207,21 @@ feature 'Case Worker Functionality' do
     expect(@client_profile).to have_recently_updated_assessments_links
   end
 
-  scenario 'Case worker uses comparison graph' do
+  scenario 'Case worker uses comparison graph when DOMAIN_TOTAL_FEATURE_ENABLED=true' do
     visit '/'
     @assessment_helper.visit_assessment_comparison CLIENT_NAME
-    expect(@comparison).to have_comparison_graph
-    validate_dates_in_legend_with_correct_order
-    @comparison.click_age_switch_0to5
-    validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_0to5)
-    @comparison.click_age_switch_6to21
-    validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_6to21)
-    validate_first_graph_bar_group_has_correct_rating
-    switch_back_to_history
+    if domain_total_feature_enabled?
+      expect(@comparison).to have_comparison_graph
+      validate_dates_in_legend_with_correct_order
+      @comparison.click_age_switch_0to5
+      validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_0to5)
+      @comparison.click_age_switch_6to21
+      validate_horizontal_axis_ticks(expected_graph_horizontal_axis_values_6to21)
+      validate_first_graph_bar_group_has_correct_rating
+      switch_back_to_history
+    else
+      expect(@comparison).to have_no_comparison_graph
+    end
   end
 
   scenario 'Case worker uses comparison table' do
@@ -230,7 +234,7 @@ feature 'Case Worker Functionality' do
     @comparison.age_switch_0to5.click
     verify_the_content_of_comparison_table('0to5')
     validate_chevron
-    validate_domain_total
+    validate_domain_total if domain_total_feature_enabled?
   end
 
   def validate_domain_total
@@ -613,6 +617,7 @@ feature 'Case Worker Functionality' do
     change_some_rating_to_mixed_value
     adjust_domain_total_count
     collapse_all_domains
+    return unless domain_total_feature_enabled?
     domain_totals = @form.domain_score_badges.map(&:text)
     expect(domain_totals).to eq(@domain_total_count)
   end

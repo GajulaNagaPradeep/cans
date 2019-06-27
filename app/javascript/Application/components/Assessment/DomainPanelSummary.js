@@ -5,6 +5,7 @@ import { DomainProgressBar, DomainScore } from './'
 import DomainCommentIcon from './DomainCommentIcon'
 import Grid from '@material-ui/core/Grid'
 import { Icon, UncontrolledTooltip } from '@cwds/components'
+import { isDomainTotalFeatureEnabled } from '../../util/env'
 
 class DomainPanelSummary extends React.PureComponent {
   renderCaregiverName() {
@@ -82,7 +83,7 @@ class DomainPanelSummary extends React.PureComponent {
             <DomainCommentIcon domain={domain} />
           </div>
           <DomainProgressBar isAssessmentUnderSix={isAssessmentUnderSix} domain={domain} />
-          <DomainScore totalScore={totalScore} key={index} />
+          {isDomainTotalFeatureEnabled() && <DomainScore totalScore={totalScore} key={index} />}
         </Grid>
       </Grid>
     )
